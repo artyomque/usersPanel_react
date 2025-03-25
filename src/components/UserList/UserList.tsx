@@ -53,7 +53,6 @@ export const UserList: FC = () => {
           height={400}
           itemCount={hasMore ? users.length + 1 : users.length}
           itemSize={50}
-          className={styles.userList}
           width={400}
           onItemsRendered={onItemsRendered}
           ref={ref}
