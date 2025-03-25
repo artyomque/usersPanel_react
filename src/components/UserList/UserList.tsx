@@ -6,7 +6,6 @@ import { User } from "../../types/User";
 
 export const UserList: FC = () => {
   const users = useSelector((state) => state.users.list);
-  const selectedUser = useSelector((state) => state.users.selectedUser);
   const dispatch = useDispatch();
 
   return (
@@ -18,7 +17,7 @@ export const UserList: FC = () => {
             onClick={() => dispatch(setSelectedUser(user))}
             key={user.id}
           >
-            {user.name.length > 23 ? user.name.slice(0, 23) + "..." : user.name}
+            {user.name}
           </li>
         ))}
       </ul>

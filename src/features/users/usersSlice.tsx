@@ -57,11 +57,8 @@ export const usersSlice = createSlice({
       .addCase(updateUser.pending, (state) => {
         state.updateStatus = "loading";
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase(updateUser.fulfilled, (state) => {
         state.updateStatus = "success";
-        state.list = state.list.map((user) =>
-          user.id === action.payload.id ? action.payload : user
-        );
       });
   },
 });
