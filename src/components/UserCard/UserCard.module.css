@@ -80,6 +80,15 @@
   cursor: pointer;
 }
 
+.saveButtonDisabled {
+  background-color: #7f7f7f;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .saveButton:hover {
   background-color: #1565c0;
 }

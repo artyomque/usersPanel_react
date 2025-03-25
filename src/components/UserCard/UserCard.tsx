@@ -1,15 +1,14 @@
 import { FC } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setSelectedUser } from "../../features/users/usersSlice";
+import { setSelectedUser, updateUser } from "../../features/users/usersSlice";
+import type { AppDispatch, RootState } from "../../app/store";
+import type { User } from "../../types/User";
 import styles from "./UserCard.module.css";
 
-interface Props {
-  className?: string;
-}
-
-export const UserCard: FC<Props> = () => {
-  const selectedUser = useSelector((state) => state.users.selectedUser);
-  const dispatch = useDispatch();
+export const UserCard: FC = () => {
+  const selectedUser = useSelector((state: RootState) => state.users.selectedUser);
+  const updateStatus = useSelector((state: RootState) => state.users.updateStatus);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     const updatedUser = { ...selectedUser, [field]: e.target.value };
@@ -17,7 +16,7 @@ export const UserCard: FC<Props> = () => {
   };
 
   const handleSubmit = () => {
-    console.log("Отправили обновленные данные пользователя на сервер:", selectedUser);
+    dispatch(updateUser(selectedUser as User));
   };
 
   if (!selectedUser) {
@@ -32,7 +31,7 @@ export const UserCard: FC<Props> = () => {
             <input
               id="name"
               className={styles.userDetailsItemInput}
-              value={selectedUser.name || "Не указано"}
+              value={selectedUser.name}
               type="text"
               onChange={(e) => handleInputChange(e, "name")}
             />
@@ -52,27 +51,32 @@ export const UserCard: FC<Props> = () => {
                 <input
                   id="jobTitle"
                   className={styles.userDetailsItemInput}
-                  value={selectedUser.jobTitle || "Не указано"}
+                  value={selectedUser.jobTitle}
+                  placeholder="Не указано"
                   type="text"
                   onChange={(e) => handleInputChange(e, "jobTitle")}
                 />
               </li>
+
               <li className={styles.userDetailsItem}>
                 <label htmlFor="department">Отдел</label>
                 <input
                   id="department"
                   className={styles.userDetailsItemInput}
-                  value={selectedUser.department || "Не указано"}
+                  value={selectedUser.department}
+                  placeholder="Не указано"
                   type="text"
                   onChange={(e) => handleInputChange(e, "department")}
                 />
               </li>
+
               <li className={styles.userDetailsItem}>
                 <label htmlFor="company">Компания</label>
                 <input
                   id="company"
                   className={styles.userDetailsItemInput}
-                  value={selectedUser.company || "Не указано"}
+                  value={selectedUser.company}
+                  placeholder="Не указано"
                   type="text"
                   onChange={(e) => handleInputChange(e, "company")}
                 />
@@ -82,8 +86,12 @@ export const UserCard: FC<Props> = () => {
         </div>
 
         <div className={styles.saveButtonSection}>
-          <button onClick={handleSubmit} className={styles.saveButton}>
-            Сохранить
+          <button
+            disabled={updateStatus === "loading"}
+            onClick={handleSubmit}
+            className={updateStatus === "loading" ? styles.saveButtonDisabled : styles.saveButton}
+          >
+            {updateStatus === "loading" ? "Сохранение..." : "Сохранить"}
           </button>
         </div>
       </div>

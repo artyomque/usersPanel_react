@@ -2,9 +2,29 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { type User } from "../../types/User";
 
 export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  const response = await fetch("https://5306c0b5eb0e543f.mokky.dev/users");
+  const response = await fetch("https://backend-mysql-api.vercel.app/api/users");
   const data = await response.json();
   return data;
+});
+
+export const updateUser = createAsyncThunk("users/updateUser", async (userData: User) => {
+  try {
+    const response = await fetch(`https://backend-mysql-api.vercel.app/api/users`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ошибка при обновлении");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 export const usersSlice = createSlice({
@@ -14,13 +34,11 @@ export const usersSlice = createSlice({
     selectedUser: null as null | User,
     isLoading: false,
     error: null as string | null,
+    updateStatus: "idle" as "idle" | "loading" | "success" | "failed",
   },
   reducers: {
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
-    },
-    updateUserInfo: (state) => {
-      console.log("тест");
     },
   },
   extraReducers: (builder) => {
@@ -35,10 +53,19 @@ export const usersSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message as string;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.updateStatus = "loading";
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.updateStatus = "success";
+        state.list = state.list.map((user) =>
+          user.id === action.payload.id ? action.payload : user
+        );
       });
   },
 });
 
-export const { setSelectedUser, updateUserInfo } = usersSlice.actions;
+export const { setSelectedUser } = usersSlice.actions;
 
 export default usersSlice.reducer;
