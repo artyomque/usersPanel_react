@@ -1,8 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { type User } from "../../types/User";
 
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  const response = await fetch("https://backend-mysql-api.vercel.app/api/users");
+export const fetchUsers = createAsyncThunk("users/fetchUsers", async (page: number) => {
+  const response = await fetch(`https://backend-mysql-api.vercel.app/api/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      page,
+      limit: 5000,
+    }),
+  });
   const data = await response.json();
   return data;
 });
@@ -27,6 +36,8 @@ export const updateUser = createAsyncThunk("users/updateUser", async (userData: 
   }
 });
 
+const maxUsers = 1000;
+
 export const usersSlice = createSlice({
   name: "users",
   initialState: {
@@ -47,12 +58,13 @@ export const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.list = action.payload;
+        state.list = [...state.list, ...action.payload.users];
+
+        state.pagination.page += 1;
+        state.pagination.hasMore = action.payload.hasMore;
         state.isLoading = false;
-      })
-      .addCase(fetchUsers.pending, (state) => {
-        state.isLoading = true;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.isLoading = false;
