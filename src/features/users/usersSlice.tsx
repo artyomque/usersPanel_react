@@ -35,6 +35,10 @@ export const usersSlice = createSlice({
     isLoading: false,
     error: null as string | null,
     updateStatus: "idle" as "idle" | "loading" | "success" | "failed",
+    pagination: {
+      page: 1,
+      hasMore: true,
+    },
   },
   reducers: {
     setSelectedUser: (state, action) => {
