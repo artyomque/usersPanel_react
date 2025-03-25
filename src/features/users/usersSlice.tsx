@@ -36,8 +36,6 @@ export const updateUser = createAsyncThunk("users/updateUser", async (userData: 
   }
 });
 
-const maxUsers = 1000;
-
 export const usersSlice = createSlice({
   name: "users",
   initialState: {
@@ -61,7 +59,6 @@ export const usersSlice = createSlice({
 
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.list = [...state.list, ...action.payload.users];
-
         state.pagination.page += 1;
         state.pagination.hasMore = action.payload.hasMore;
         state.isLoading = false;

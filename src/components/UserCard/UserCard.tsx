@@ -20,7 +20,11 @@ export const UserCard: FC = () => {
   };
 
   if (!selectedUser) {
-    return <>Пользователь не выбран</>;
+    return (
+      <>
+        <div className={styles.userCard}>Пользователь не выбран</div>
+      </>
+    );
   }
 
   return (

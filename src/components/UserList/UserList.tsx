@@ -1,26 +1,33 @@
-import { FC, useEffect, useRef } from "react";
+import { FC } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUsers, setSelectedUser } from "../../features/users/usersSlice";
 import { FixedSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import styles from "./UserList.module.css";
+import { AppDispatch, RootState } from "../../app/store";
+
+interface RowProps {
+  index: number;
+  style: React.CSSProperties;
+}
 
 export const UserList: FC = () => {
-  const users = useSelector((state) => state.users.list);
-  const hasMore = useSelector((state) => state.users.pagination.hasMore);
-  const page = useSelector((state) => state.users.pagination.page);
-  const dispatch = useDispatch();
+  const users = useSelector((state: RootState) => state.users.list);
+  const hasMore = useSelector((state: RootState) => state.users.pagination.hasMore);
+  const page = useSelector((state: RootState) => state.users.pagination.page);
+  const dispatch: AppDispatch = useDispatch();
 
   const isItemLoaded = (index: number) => index < users.length;
 
-  const loadMoreItems = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const loadMoreItems = async (_startIndex: number, _stopIndex: number): Promise<void> => {
     if (hasMore) {
-      return dispatch(fetchUsers(page));
+      await dispatch(fetchUsers(page));
     }
     return Promise.resolve();
   };
 
-  const Row = ({ index, style }: any) => {
+  const Row = ({ index, style }: RowProps) => {
     if (!isItemLoaded(index)) {
       return (
         <div style={style} className={styles.userListItem}>
@@ -52,8 +59,8 @@ export const UserList: FC = () => {
         <List
           height={400}
           itemCount={hasMore ? users.length + 1 : users.length}
-          itemSize={50}
-          width={400}
+          itemSize={25}
+          width={287}
           onItemsRendered={onItemsRendered}
           ref={ref}
         >
